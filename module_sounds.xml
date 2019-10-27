@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_sounds" default="compile.module.sounds">
+  <dirname property="module.sounds.basedir" file="${ant.file.module_sounds}"/>
+  
+  <property name="module.jdk.home.sounds" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.sounds" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.sounds" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.sounds" value="-encoding UTF-8 -source 11 -target 8 ${compiler.args}"/>
+  
+  <property name="sounds.output.dir" value="${module.sounds.basedir}/out/production/Sounds"/>
+  <property name="sounds.testoutput.dir" value="${module.sounds.basedir}/out/test/Sounds"/>
+  
+  <path id="sounds.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="sounds.module.production.classpath">
+    <path refid="${module.jdk.classpath.sounds}"/>
+    <path refid="library.jnativehook-2.1.0.classpath"/>
+    <path refid="library.javafx-swt.classpath"/>
+  </path>
+  
+  <path id="sounds.runtime.production.module.classpath">
+    <pathelement location="${sounds.output.dir}"/>
+    <path refid="library.jnativehook-2.1.0.classpath"/>
+    <path refid="library.javafx-swt.classpath"/>
+  </path>
+  
+  <path id="sounds.module.classpath">
+    <path refid="${module.jdk.classpath.sounds}"/>
+    <pathelement location="${sounds.output.dir}"/>
+    <path refid="library.jnativehook-2.1.0.classpath"/>
+    <path refid="library.javafx-swt.classpath"/>
+  </path>
+  
+  <path id="sounds.runtime.module.classpath">
+    <pathelement location="${sounds.testoutput.dir}"/>
+    <pathelement location="${sounds.output.dir}"/>
+    <path refid="library.jnativehook-2.1.0.classpath"/>
+    <path refid="library.javafx-swt.classpath"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.sounds">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.sounds">
+    <patternset refid="excluded.from.module.sounds"/>
+  </patternset>
+  
+  <path id="sounds.module.sourcepath">
+    <dirset dir="${module.sounds.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.sounds" depends="compile.module.sounds.production,compile.module.sounds.tests" description="Compile module Sounds"/>
+  
+  <target name="compile.module.sounds.production" depends="register.custom.compilers" description="Compile module Sounds; production classes">
+    <mkdir dir="${sounds.output.dir}"/>
+    <javac2 destdir="${sounds.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.sounds}/javac">
+      <compilerarg line="${compiler.args.sounds}"/>
+      <bootclasspath refid="sounds.module.bootclasspath"/>
+      <classpath refid="sounds.module.production.classpath"/>
+      <src refid="sounds.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.sounds"/>
+    </javac2>
+    
+    <copy todir="${sounds.output.dir}">
+      <fileset dir="${module.sounds.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.sounds.tests" depends="register.custom.compilers,compile.module.sounds.production" description="compile module Sounds; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.sounds" description="cleanup module">
+    <delete dir="${sounds.output.dir}"/>
+    <delete dir="${sounds.testoutput.dir}"/>
+  </target>
+</project>
