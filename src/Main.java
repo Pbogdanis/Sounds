@@ -8,23 +8,26 @@ import org.jnativehook.keyboard.NativeKeyListener;
 
 import javax.imageio.ImageIO;
 import javax.sound.sampled.*;
+import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URL;
 
 public class Main implements NativeKeyListener {
-    private static Image trayImage;
+    public static Image trayImage;
     private static SystemTray sysTray;
     private static PopupMenu menu;
     private static MenuItem item1,item2,item3;
     private static TrayIcon trayIcon;
-    private static String soundfile,mode;
+    public static String soundfile,mode;
 
 
     public static void main(String[] args){
+
         try {
             GlobalScreen.registerNativeHook();
         } catch (NativeHookException e) {
@@ -45,8 +48,9 @@ public class Main implements NativeKeyListener {
 
             //create item
             item1 = new MenuItem("Exit");
-            item2 = new MenuItem("Classic");
-            item3 = new MenuItem("Mechanical");
+            item2 = new MenuItem("Show GUI");
+            item3 = new MenuItem("Hide GUI");
+
 
             //add item to menu
             menu.add(item2);
@@ -54,7 +58,8 @@ public class Main implements NativeKeyListener {
             menu.add(item1);
 
             //Default soundfile
-            soundfile = "./resources/typewriter.wav";
+            soundfile = "./resources/mech_hard.wav";
+            mode = "Mechanical";
 
             //add action listener to the item in the popup menu
             item1.addActionListener(new ActionListener() {
@@ -64,14 +69,20 @@ public class Main implements NativeKeyListener {
             });
             item2.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    soundfile = "resources/typewriter.wav";
-                    mode = "classic";
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            MainForm.showGUI();
+                        }
+                    });
                 }
             });
             item3.addActionListener(new ActionListener() {
                 public void actionPerformed(ActionEvent e) {
-                    soundfile = "resources/mech_hard.wav";
-                    mode = "mechanical";
+                    SwingUtilities.invokeLater(new Runnable() {
+                        public void run() {
+                            MainForm.hideGUI();
+                        }
+                    });
                 }
             });
 
@@ -86,13 +97,24 @@ public class Main implements NativeKeyListener {
                 System.out.println(e.getMessage());
             }
 
+            //Show GUI Form
+            SwingUtilities.invokeLater(new Runnable() {
+                public void run() {
+                    MainForm.showGUI();
+                }
+            });
         }
     }
 
     @Override
     public void nativeKeyPressed(NativeKeyEvent e){
-        //check the mode selected
-        playSound(soundfile);
+        if(e.getKeyCode() == NativeKeyEvent.VC_ENTER && mode.equals("Classic")){
+            playSound("resources/bell.wav");
+        }
+        else {
+            //check the mode selected
+            playSound(soundfile);
+        }
         System.out.println("Pressed : " + NativeKeyEvent.getKeyText(e.getKeyCode()));
     }
     @Override
@@ -128,5 +150,6 @@ public class Main implements NativeKeyListener {
         }
         clip.start();
     }
+
 
 }
