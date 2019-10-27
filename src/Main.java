@@ -92,11 +92,6 @@ public class Main implements NativeKeyListener {
     @Override
     public void nativeKeyPressed(NativeKeyEvent e){
         //check the mode selected
-        /*if( mode.equals("classic") ){
-            if( NativeKeyEvent.getKeyText(e.getKeyCode()).equals("Space") ) {
-                soundfile = "resources/space_enter.wav";
-            }
-        }*/
         playSound(soundfile);
         System.out.println("Pressed : " + NativeKeyEvent.getKeyText(e.getKeyCode()));
     }
